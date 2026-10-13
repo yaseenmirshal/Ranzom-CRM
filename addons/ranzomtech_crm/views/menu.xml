@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <menuitem id="menu_ranzomtech_root" name="RanzomTech CRM" sequence="10" groups="ranzomtech_crm.group_ranzomtech_crm_user"/>
+  <menuitem id="menu_ranzomtech_dashboard" name="Dashboard" parent="menu_ranzomtech_root" action="action_ranzom_dashboard" sequence="10"/>
+  <menuitem id="menu_ranzomtech_pipeline" name="Leads &amp; Pipeline" parent="menu_ranzomtech_root" action="action_ranzom_leads" sequence="20"/>
+  <menuitem id="menu_ranzomtech_clients" name="Clients" parent="menu_ranzomtech_root" action="action_ranzom_clients" sequence="30"/>
+  <menuitem id="menu_ranzomtech_followups" name="Follow-ups" parent="menu_ranzomtech_root" action="action_ranzom_followups" sequence="40"/>
+</odoo>

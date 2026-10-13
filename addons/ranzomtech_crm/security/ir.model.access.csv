@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_ranzom_followup_user,ranzom.followup user,model_ranzom_followup,ranzomtech_crm.group_ranzomtech_crm_user,1,1,1,1
+access_ranzom_dashboard_user,ranzom.crm.dashboard user,model_ranzom_crm_dashboard,ranzomtech_crm.group_ranzomtech_crm_user,1,0,1,0

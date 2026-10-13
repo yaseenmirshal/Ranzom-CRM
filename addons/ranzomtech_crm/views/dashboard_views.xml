@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <record id="view_ranzom_dashboard_form" model="ir.ui.view">
+    <field name="name">ranzom.crm.dashboard.form</field>
+    <field name="model">ranzom.crm.dashboard</field>
+    <field name="arch" type="xml">
+      <form string="RanzomTech CRM Dashboard" create="0" edit="0">
+        <sheet>
+          <div class="oe_title"><h1>RanzomTech CRM</h1><p>Lead → Pipeline → Client</p></div>
+          <group col="4">
+            <group string="Pipeline"><field name="total_leads"/><field name="open_leads"/><field name="won_leads"/></group>
+            <group string="Clients"><field name="clients"/><field name="pending_followups"/></group>
+            <group string="Value"><field name="pipeline_value"/><field name="quoted_value"/></group>
+            <group string="Cash"><field name="cash_received"/><field name="outstanding"/></group>
+          </group>
+          <separator string="Version 1"/>
+          <p>Next phase: AI lead scoring, automated follow-ups, WhatsApp and email integrations through APIs and n8n.</p>
+        </sheet>
+      </form>
+    </field>
+  </record>
+  <record id="action_ranzom_dashboard" model="ir.actions.server">
+    <field name="name">RanzomTech CRM Dashboard</field>
+    <field name="model_id" ref="model_ranzom_crm_dashboard"/>
+    <field name="state">code</field>
+    <field name="code">action = model.get_dashboard()</field>
+  </record>
+</odoo>

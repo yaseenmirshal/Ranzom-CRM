@@ -1,0 +1,25 @@
+# -*- coding: utf-8 -*-
+{
+    "name": "RanzomTech CRM",
+    "version": "19.0.1.0.0",
+    "summary": "RanzomTech lead-to-client CRM built on Odoo CRM",
+    "description": "RanzomTech CRM v1: leads, pipeline, contacts/clients, follow-ups and operational KPIs, designed from the RanzomTech Notion CRM structure.",
+    "author": "RanzomTech",
+    "website": "https://ranzomtech.com",
+    "license": "LGPL-3",
+    "category": "Sales/CRM",
+    "depends": ["crm", "sale_management", "project", "account"],
+    "data": [
+        "security/security.xml",
+        "security/ir.model.access.csv",
+        "data/lead_stages.xml",
+        "views/crm_lead_views.xml",
+        "views/res_partner_views.xml",
+        "views/followup_views.xml",
+        "views/dashboard_views.xml",
+        "views/menu.xml",
+    ],
+    "demo": ["demo/demo.xml"],
+    "application": True,
+    "installable": True,
+}
