@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
 import { customers, getStoredDocuments, saveStoredDocuments, type BusinessDocument, type DocumentKind } from "@/data/business-data";
+import { formatPreciseCurrency } from "@/lib/currency";
 
 type LineItem = { id: number; name: string; description: string; quantity: number; unitPrice: number; discount: number; tax: number };
 
-const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 2 });
 const DEFAULT_DATE = "2026-10-14";
 const nowISODate = () => DEFAULT_DATE;
 const afterDays = (days: number) => new Date(new Date(`${DEFAULT_DATE}T12:00:00`).getTime() + days * 86400000).toISOString().slice(0, 10);
@@ -142,7 +142,7 @@ export default function DocumentCreator({ kind }: { kind: DocumentKind }) {
                 <label className="form-field form-field-full"><span>Customer <b>*</b></span><select onChange={(event) => selectCustomer(event.target.value)} value={customer}>{customers.map((item) => <option key={item.name}>{item.name}</option>)}</select></label>
                 <label className="form-field"><span>Receipt number</span><input value={latestNumber} readOnly /></label>
                 <label className="form-field"><span>Payment date</span><input onChange={(event) => setIssueDate(event.target.value)} type="date" value={issueDate} /></label>
-                <label className="form-field"><span>Amount received <b>*</b></span><div className="currency-input"><span>$</span><input min="0.01" onChange={(event) => setReceiptAmount(Number(event.target.value) || 0)} required step="0.01" type="number" value={receiptAmount || ""} /></div></label>
+                <label className="form-field"><span>Amount received <b>*</b></span><div className="currency-input"><span>₹</span><input min="0.01" onChange={(event) => setReceiptAmount(Number(event.target.value) || 0)} required step="0.01" type="number" value={receiptAmount || ""} /></div></label>
                 <label className="form-field"><span>Payment method</span><select onChange={(event) => setPaymentMethod(event.target.value)} value={paymentMethod}><option>Bank transfer</option><option>Card</option><option>Cash</option><option>Check</option><option>Other</option></select></label>
                 <label className="form-field form-field-full"><span>Related invoice</span><select onChange={(event) => setRelatedInvoice(event.target.value)} value={relatedInvoice}><option value="INV-DEMO">INV-DEMO · Northstar Studio</option><option value="">Not linked to an invoice</option></select></label>
                 <label className="form-field form-field-full"><span>Transaction / reference number</span><input name="transaction" onChange={(event) => setReference(event.target.value)} placeholder="e.g. TXN-884921" value={reference} /></label>
@@ -180,7 +180,7 @@ export default function DocumentCreator({ kind }: { kind: DocumentKind }) {
                   <td><input aria-label="Unit price" min="0" onChange={(event) => updateLine(item.id, "unitPrice", event.target.value)} step="0.01" type="number" value={item.unitPrice} /></td>
                   <td><input aria-label="Discount percent" max="100" min="0" onChange={(event) => updateLine(item.id, "discount", event.target.value)} type="number" value={item.discount} /></td>
                   <td><input aria-label="Tax percent" min="0" onChange={(event) => updateLine(item.id, "tax", event.target.value)} type="number" value={item.tax} /></td>
-                  <td className="line-item-total">{money.format(item.quantity * item.unitPrice * (1 - item.discount / 100) * (1 + item.tax / 100))}</td>
+                  <td className="line-item-total">{formatPreciseCurrency(item.quantity * item.unitPrice * (1 - item.discount / 100) * (1 + item.tax / 100))}</td>
                   <td><button aria-label="Remove line item" className="remove-line-button" disabled={lineItems.length === 1} onClick={() => setLineItems((items) => items.filter((line) => line.id !== item.id))} type="button">×</button></td>
                 </tr>)}</tbody>
               </table></div>
@@ -211,11 +211,11 @@ export default function DocumentCreator({ kind }: { kind: DocumentKind }) {
             <div className="preview-document-number">{latestNumber}</div>
             <div className="preview-parties"><div><small>Bill to</small><strong>{customerInfo.name}</strong><span>{contactName}</span><span>{contactEmail}</span>{contactPhone && <span>{contactPhone}</span>}</div><div><small>{kind === "receipt" ? "Payment date" : "Date"}</small><strong>{displayDate(issueDate)}</strong><small>{kind === "receipt" ? "Reference" : kind === "quotation" ? "Valid until" : "Due date"}</small><span>{kind === "receipt" ? (reference || "—") : displayDate(dueDate)}</span>{kind !== "receipt" && reference && <><small>Reference</small><span>{reference}</span></>}</div></div>
             {kind === "receipt" ? (
-              <div className="receipt-preview-amount"><small>Amount received</small><strong>{money.format(receiptAmount)}</strong><span>{paymentMethod}</span></div>
+              <div className="receipt-preview-amount"><small>Amount received</small><strong>{formatPreciseCurrency(receiptAmount)}</strong><span>{paymentMethod}</span></div>
             ) : (
               <>
-                <div className="preview-line-items"><div className="preview-line-heading"><span>Description</span><span>Amount</span></div>{lineItems.map((item) => <div className="preview-line" key={item.id}><span>{item.name || "Product or service"}<small>{item.description || `${item.quantity} × ${money.format(item.unitPrice)}`}</small></span><strong>{money.format(item.quantity * item.unitPrice * (1 - item.discount / 100) * (1 + item.tax / 100))}</strong></div>)}</div>
-                <div className="preview-totals"><span>Subtotal <strong>{money.format(subtotal)}</strong></span><span>Discount <strong>−{money.format(discountTotal)}</strong></span><span>Tax <strong>{money.format(taxTotal)}</strong></span><span className="preview-grand-total">Total <strong>{money.format(total)}</strong></span></div>
+                <div className="preview-line-items"><div className="preview-line-heading"><span>Description</span><span>Amount</span></div>{lineItems.map((item) => <div className="preview-line" key={item.id}><span>{item.name || "Product or service"}<small>{item.description || `${item.quantity} × ${formatPreciseCurrency(item.unitPrice)}`}</small></span><strong>{formatPreciseCurrency(item.quantity * item.unitPrice * (1 - item.discount / 100) * (1 + item.tax / 100))}</strong></div>)}</div>
+                <div className="preview-totals"><span>Subtotal <strong>{formatPreciseCurrency(subtotal)}</strong></span><span>Discount <strong>−{formatPreciseCurrency(discountTotal)}</strong></span><span>Tax <strong>{formatPreciseCurrency(taxTotal)}</strong></span><span className="preview-grand-total">Total <strong>{formatPreciseCurrency(total)}</strong></span></div>
               </>
             )}
             {kind === "receipt" && notes ? <div className="preview-notes"><strong>Payment notes</strong><span>{notes}</span></div> : null}

@@ -8138,3 +8138,174 @@ body {
     font-size: 14px;
   }
 }
+
+/* Keep pipeline preview data explicit while preserving business-only totals. */
+.pipeline-demo-label {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 22%, var(--color-line));
+  border-radius: 999px;
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+  margin-top: 8px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 570;
+}
+
+.opportunity-follow-up {
+  flex-wrap: wrap;
+  font-size: 14px;
+}
+
+.opportunity-follow-up > svg {
+  width: 15px;
+  height: 15px;
+}
+
+.opportunity-priority {
+  flex-basis: 100%;
+  margin-left: 21px;
+  color: var(--color-subtle);
+  font-size: 13px;
+}
+
+.pipeline-column-heading h2 {
+  font-size: 15px;
+}
+
+.pipeline-column {
+  min-height: 170px;
+}
+
+.pipeline-column-cards {
+  min-height: 0;
+}
+
+.pipeline-column-empty {
+  min-height: 105px;
+}
+
+.pipeline-column-count {
+  min-width: 22px;
+  height: 22px;
+  font-size: 13px;
+}
+
+.opportunity-name {
+  font-size: 15px;
+}
+
+.opportunity-company {
+  font-size: 14px;
+}
+
+.opportunity-value {
+  font-size: 18px;
+}
+
+.opportunity-card-footer > span:last-child {
+  font-size: 13px;
+}
+
+.opportunity-stage-select,
+.pipeline-list-select {
+  min-height: 34px;
+  font-size: 14px;
+}
+
+.pipeline-list-lead strong {
+  font-size: 15px;
+}
+
+.pipeline-list-lead small {
+  font-size: 13px;
+}
+
+.pipeline-board-empty {
+  min-height: 280px;
+  justify-content: center;
+  align-content: center;
+}
+
+.pipeline-board-empty h2 {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 20px;
+}
+
+.pipeline-board-empty p {
+  max-width: 430px;
+  margin: 4px auto 10px;
+  color: var(--color-muted);
+  font-size: 15px;
+}
+
+.line-items-table th {
+  font-size: 13px;
+}
+
+.line-items-table td > input {
+  min-height: 35px;
+  font-size: 14px;
+}
+
+.line-items-table .line-item-total {
+  font-size: 14px;
+}
+
+.preview-brand-row > span:nth-child(2) strong,
+.preview-parties strong,
+.preview-line > span,
+.preview-line > strong {
+  font-size: 13px;
+}
+
+.preview-brand-row > span:nth-child(2) small,
+.preview-parties small,
+.preview-parties span,
+.preview-line-heading,
+.preview-line small,
+.preview-totals > span,
+.preview-notes strong,
+.preview-notes span,
+.preview-footer {
+  font-size: 11px;
+}
+
+.settings-nav-link {
+  min-height: 37px;
+  font-size: 14px;
+}
+
+.report-kpi-grid article > strong,
+.report-kpi-grid article > div > strong {
+  font-size: 27px;
+}
+
+.report-kpi-grid article > small,
+.report-muted,
+.report-legend,
+.report-stat-pair {
+  font-size: 13px;
+}
+
+.record-delete-action svg,
+.task-more-action svg,
+.remove-line-button svg {
+  width: 17px;
+  height: 17px;
+}
+
+.records-search > svg,
+.filter-select > svg,
+.pipeline-sort > svg {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 760px) {
+  .pipeline-board-empty {
+    min-height: 230px;
+    padding-inline: 20px;
+  }
+}

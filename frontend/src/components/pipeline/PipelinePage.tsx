@@ -6,6 +6,7 @@ import Icon from "@/components/ui/Icon";
 import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import { crmLeadSamples, type CRMLead, type LeadStage } from "@/data/mock-data";
 import { readLeads, saveLeads } from "@/lib/lead-storage";
+import { formatCurrency } from "@/lib/currency";
 
 const stages: LeadStage[] = ["New", "Qualified", "Proposal", "Negotiation", "Won", "Lost"];
 const stageTone: Record<LeadStage, string> = {
@@ -16,17 +17,6 @@ const stageTone: Record<LeadStage, string> = {
   Won: "stage-won",
   Lost: "stage-lost",
 };
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-const followUpDates = ["Today, 10:30 AM", "Tomorrow, 9:00 AM", "Oct 17, 2:00 PM", "Oct 18, 11:00 AM", "Oct 19, 3:30 PM"];
-
-function followUpFor(index: number) {
-  return followUpDates[index % followUpDates.length];
-}
-
 export default function PipelinePage() {
   const [leads, setLeads] = useState<CRMLead[]>(crmLeadSamples);
   const [query, setQuery] = useState("");
@@ -50,10 +40,10 @@ export default function PipelinePage() {
   }, []);
 
   const activeLeads = useMemo(() => leads.filter((lead) => !lead.isDemo), [leads]);
-  const owners = useMemo(() => ["Everyone", ...new Set(activeLeads.map((lead) => lead.owner))], [activeLeads]);
+  const owners = useMemo(() => ["Everyone", ...new Set(leads.map((lead) => lead.owner))], [leads]);
   const filteredLeads = useMemo(() => {
     const search = query.trim().toLowerCase();
-    const result = activeLeads.filter((lead) =>
+    const result = leads.filter((lead) =>
       (!search || `${lead.name} ${lead.company} ${lead.owner} ${lead.source}`.toLowerCase().includes(search)) &&
       (ownerFilter === "Everyone" || lead.owner === ownerFilter) &&
       (sourceFilter === "All sources" || lead.source === sourceFilter),
@@ -63,7 +53,7 @@ export default function PipelinePage() {
       if (sort === "name") return a.name.localeCompare(b.name);
       return b.value - a.value;
     });
-  }, [activeLeads, ownerFilter, query, sort, sourceFilter]);
+  }, [leads, ownerFilter, query, sort, sourceFilter]);
   const openLeads = activeLeads.filter((lead) => lead.stage !== "Won" && lead.stage !== "Lost");
   const pipelineTotal = openLeads.reduce((sum, lead) => sum + lead.value, 0);
 
@@ -98,9 +88,9 @@ export default function PipelinePage() {
       </header>
 
       <section aria-label="Pipeline overview" className="pipeline-summary-strip">
-        <div><span>Open pipeline</span><strong>{formatter.format(pipelineTotal)}</strong></div>
+        <div><span>Open pipeline</span><strong>{formatCurrency(pipelineTotal)}</strong></div>
         <div><span>Active opportunities</span><strong>{openLeads.length}</strong></div>
-        <div><span>Average deal size</span><strong>{formatter.format(openLeads.length ? Math.round(pipelineTotal / openLeads.length) : 0)}</strong></div>
+        <div><span>Average deal size</span><strong>{formatCurrency(openLeads.length ? Math.round(pipelineTotal / openLeads.length) : 0)}</strong></div>
         <div className="pipeline-summary-note"><span className="pipeline-live-dot" /> Updated just now</div>
       </section>
 
@@ -141,13 +131,15 @@ export default function PipelinePage() {
       </div>
 
       {view === "kanban" ? (
-        <div className="pipeline-board" aria-label="Sales pipeline stages">
-          {stages.map((stage) => {
+        filteredLeads.length ? (
+          <div className="pipeline-board" aria-label="Sales pipeline stages">
+            {stages.map((stage) => {
             const stageLeads = filteredLeads.filter((lead) => lead.stage === stage);
-            const stageValue = stageLeads.reduce((sum, lead) => sum + lead.value, 0);
+            const businessStageLeads = stageLeads.filter((lead) => !lead.isDemo);
+            const stageValue = businessStageLeads.reduce((sum, lead) => sum + lead.value, 0);
             return (
               <section
-                aria-label={`${stage}, ${stageLeads.length} opportunities`}
+                aria-label={`${stage}, ${businessStageLeads.length} opportunities`}
                 className={`pipeline-column pipeline-column-${stage.toLowerCase()}`}
                 key={stage}
                 onDragOver={(event) => event.preventDefault()}
@@ -159,12 +151,11 @@ export default function PipelinePage() {
                 }}
               >
                 <div className="pipeline-column-heading">
-                  <div><span className={`pipeline-stage-marker marker-${stage === "Won" ? "green" : stage === "Lost" ? "slate" : stage === "Proposal" ? "violet" : stage === "Negotiation" ? "amber" : stage === "Qualified" ? "blue" : "slate"}`} /><h2>{stage}</h2><span className="pipeline-column-count">{stageLeads.length}</span></div>
-                  <strong>{formatter.format(stageValue)}</strong>
+                  <div><span className={`pipeline-stage-marker marker-${stage === "Won" ? "green" : stage === "Lost" ? "slate" : stage === "Proposal" ? "violet" : stage === "Negotiation" ? "amber" : stage === "Qualified" ? "blue" : "slate"}`} /><h2>{stage}</h2><span className="pipeline-column-count">{businessStageLeads.length}</span></div>
+                  <strong>{formatCurrency(stageValue)}</strong>
                 </div>
                 <div className="pipeline-column-cards">
                   {stageLeads.length ? stageLeads.map((lead) => {
-                    const leadIndex = leads.findIndex((item) => item.id === lead.id);
                     return (
                       <article
                         className="opportunity-card"
@@ -181,12 +172,13 @@ export default function PipelinePage() {
                           <span className="opportunity-card-actions"><button aria-label={`Delete lead: ${lead.name}`} className="record-delete-action" onClick={(event) => { event.stopPropagation(); setDeletingLead(lead); }} title="Delete lead" type="button"><Icon name="trash" size={15} /></button><span className="opportunity-drag" aria-label="Drag to move stage">⠿</span></span>
                         </div>
                         <div className="opportunity-company">{lead.company}</div>
-                        <div className="opportunity-value">{formatter.format(lead.value)}</div>
+                        {lead.isDemo && <span className="pipeline-demo-label">Sample preview</span>}
+                        <div className="opportunity-value">{formatCurrency(lead.value)}</div>
                         <div className="opportunity-meta">
                           <span className="table-source"><i className={`source-dot source-${lead.source.toLowerCase()}`} />{lead.source}</span>
                           <span className={`owner-avatar avatar-${lead.color}`} title={lead.owner}>{lead.ownerInitials}</span>
                         </div>
-                        <div className="opportunity-follow-up"><Icon name="calendar" size={13} /><span>{followUpFor(leadIndex)}</span></div>
+                        <div className="opportunity-follow-up"><Icon name="calendar" size={13} /><span>Follow-up not scheduled</span><span className="opportunity-priority">Priority not set</span></div>
                         <div className="opportunity-card-footer">
                           <span className={`stage-badge ${stageTone[lead.stage]}`}>{lead.stage}</span>
                           <span>{lead.lastActivity.replace(" · ", " · ")}</span>
@@ -197,12 +189,19 @@ export default function PipelinePage() {
                         </select>
                       </article>
                     );
-                  }                  ) : <div className="pipeline-column-empty">{filteredLeads.length ? "Drop an opportunity here" : "Add an opportunity to start your pipeline."}</div>}
+                  }) : <div className="pipeline-column-empty">Drop an opportunity here</div>}
                 </div>
               </section>
             );
-          })}
-        </div>
+            })}
+          </div>
+        ) : (
+          <div className="pipeline-board-empty leads-empty-state">
+            <h2>{activeLeads.length ? "No opportunities found" : "No opportunities yet"}</h2>
+            <p>{activeLeads.length ? "Adjust your filters or add a new opportunity." : "Add your first lead to start building your pipeline."}</p>
+            <Link className="button-primary" href="/leads"><Icon name="plus" size={16} />Add opportunity</Link>
+          </div>
+        )
       ) : (
         <section aria-label="Pipeline opportunities" className="records-surface pipeline-list-surface">
           <div className="crm-table-wrap">
@@ -211,13 +210,13 @@ export default function PipelinePage() {
               <tbody>
                 {filteredLeads.map((lead) => (
                   <tr key={lead.id}>
-                    <td><Link className="pipeline-list-lead" href={`/leads/${lead.id}`}><span className={`lead-avatar avatar-${lead.color}`}>{lead.initials}</span><span><strong>{lead.name}</strong><small>{lead.company}</small></span></Link></td>
+                    <td><Link className="pipeline-list-lead" href={`/leads/${lead.id}`}><span className={`lead-avatar avatar-${lead.color}`}>{lead.initials}</span><span><strong>{lead.name}</strong><small>{lead.company}{lead.isDemo && " · Sample preview"}</small></span></Link></td>
                     <td><span className={`stage-badge ${stageTone[lead.stage]}`}>{lead.stage}</span></td>
-                    <td className="table-value">{formatter.format(lead.value)}</td>
+                    <td className="table-value">{formatCurrency(lead.value)}</td>
                     <td>{lead.source}</td>
                     <td>{lead.owner}</td>
                     <td>{lead.lastActivity}</td>
-                    <td>{followUpFor(leads.findIndex((item) => item.id === lead.id))}</td>
+                    <td>Not scheduled</td>
                     <td><select aria-label={`Move ${lead.name} to stage`} className="pipeline-list-select" onChange={(event) => moveLead(lead.id, event.target.value as LeadStage)} value={lead.stage}>{stages.map((stage) => <option key={stage}>{stage}</option>)}</select></td>
                     <td><button aria-label={`Delete lead: ${lead.name}`} className="record-delete-action" onClick={() => setDeletingLead(lead)} title="Delete lead" type="button"><Icon name="trash" size={15} /></button></td>
                   </tr>

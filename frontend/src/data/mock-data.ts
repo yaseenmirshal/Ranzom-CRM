@@ -74,9 +74,9 @@ export type DashboardActivity = {
 export const dashboardData = {
   kpis: [
     { label: "Total leads", value: "0", change: "0", context: "No real leads yet", icon: "leads", tone: "sage", trend: "up" },
-    { label: "Open pipeline", value: "$0", change: "0", context: "No active opportunities", icon: "pipeline", tone: "blue", trend: "up" },
+    { label: "Open pipeline", value: "₹0", change: "0", context: "No active opportunities", icon: "pipeline", tone: "blue", trend: "up" },
     { label: "Won deals", value: "0", change: "0", context: "No deals won yet", icon: "clients", tone: "green", trend: "up" },
-    { label: "Revenue", value: "$0", change: "0", context: "No revenue recorded", icon: "invoice", tone: "amber", trend: "up" },
+    { label: "Revenue", value: "₹0", change: "0", context: "No revenue recorded", icon: "invoice", tone: "amber", trend: "up" },
     { label: "Follow-ups due", value: "0", change: "0", context: "Nothing needs attention", icon: "followups", tone: "rose", trend: "attention" },
   ],
   pipeline: [

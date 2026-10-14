@@ -12,19 +12,7 @@ import {
   type LeadStage,
 } from "@/data/mock-data";
 import { readLeads } from "@/lib/lead-storage";
-
-const currency = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
-
-const compactCurrency = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  notation: "compact",
-  maximumFractionDigits: 1,
-});
+import { formatCompactCurrency, formatCurrency } from "@/lib/currency";
 
 const stageStyles: Record<LeadStage, string> = {
   New: "stage-new",
@@ -142,7 +130,7 @@ function PipelinePanel() {
                 style={{ width: `${(item.count / maxCount) * 100}%` }}
               />
             </div>
-            <div className="pipeline-stage-value">{item.value === 0 ? "$0" : compactCurrency.format(item.value)}</div>
+            <div className="pipeline-stage-value">{item.value === 0 ? "₹0" : formatCompactCurrency(item.value)}</div>
           </div>
         ))}
       </div>
@@ -150,7 +138,7 @@ function PipelinePanel() {
       <div className="pipeline-summary">
         <span><strong>{totalCount}</strong> total deals</span>
         <span className="pipeline-summary-divider" />
-        <span><strong>{currency.format(totalValue)}</strong> total value</span>
+        <span><strong>{formatCurrency(totalValue)}</strong> total value</span>
         <span className="pipeline-summary-note">Across all stages</span>
       </div>
     </section>
@@ -225,7 +213,7 @@ function LeadRow({ lead }: { lead: DashboardLead }) {
         <span className="company-type">{lead.companyType}</span>
       </td>
       <td><SourceBadge source={lead.source} /></td>
-      <td className="lead-value">{currency.format(lead.value)}</td>
+      <td className="lead-value">{formatCurrency(lead.value)}</td>
       <td><StageBadge stage={lead.stage} /></td>
       <td>
         <span className="owner-cell">
@@ -283,7 +271,7 @@ function RecentLeads({ leads }: { leads: DashboardLead[] }) {
               </span>
               <span className="mobile-lead-meta">
                 <StageBadge stage={lead.stage} />
-                <span>{currency.format(lead.value)}</span>
+                <span>{formatCurrency(lead.value)}</span>
               </span>
             </span>
             <Icon name="arrowUpRight" size={15} />

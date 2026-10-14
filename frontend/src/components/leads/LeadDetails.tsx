@@ -6,12 +6,7 @@ import Icon from "@/components/ui/Icon";
 import { crmLeadSamples, type CRMLead } from "@/data/mock-data";
 import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import { readLeads, saveLeads } from "@/lib/lead-storage";
-
-const CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
+import { formatCurrency } from "@/lib/currency";
 
 export default function LeadDetails({ id }: { id: string }) {
   const seedLead = crmLeadSamples.find((lead) => lead.id === Number(id)) ?? null;
@@ -94,7 +89,7 @@ export default function LeadDetails({ id }: { id: string }) {
               <span className="detail-record-id">LEAD-{lead.id}</span>
             </div>
             <div className="detail-fields-grid">
-              <div className="detail-field"><span>Estimated value</span><strong className="detail-value">{CURRENCY.format(lead.value)}</strong></div>
+              <div className="detail-field"><span>Estimated value</span><strong className="detail-value">{formatCurrency(lead.value)}</strong></div>
               <div className="detail-field"><span>Lead source</span><strong>{lead.source}</strong></div>
               <div className="detail-field"><span>Assigned to</span><strong className="detail-owner"><span className={`owner-avatar avatar-${lead.color}`}>{lead.ownerInitials}</span>{lead.owner}</strong></div>
               <div className="detail-field"><span>Created</span><strong>{lead.createdAt}</strong></div>

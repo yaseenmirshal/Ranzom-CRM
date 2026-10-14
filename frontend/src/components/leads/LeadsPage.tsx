@@ -8,6 +8,7 @@ import Modal from "@/components/ui/Modal";
 import DeleteConfirmation from "@/components/ui/DeleteConfirmation";
 import { crmLeadSamples, type CRMLead, type LeadSource, type LeadStage } from "@/data/mock-data";
 import { readLeads, saveLeads } from "@/lib/lead-storage";
+import { formatCurrency } from "@/lib/currency";
 
 const PAGE_SIZE = 6;
 const LEAD_SOURCES: LeadSource[] = [
@@ -26,11 +27,6 @@ const LEAD_STAGES: LeadStage[] = [
   "Lost",
 ];
 const OWNERS = [...new Set(crmLeadSamples.map((lead) => lead.owner))];
-const CURRENCY = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  maximumFractionDigits: 0,
-});
 
 function stageClass(stage: LeadStage) {
   return `stage-badge stage-${stage.toLowerCase()}`;
@@ -127,7 +123,7 @@ function LeadForm({
         <label className="form-field">
           <span>Estimated value</span>
           <div className="currency-input">
-            <span>$</span>
+            <span>₹</span>
             <input min="0" name="value" placeholder="0" type="number" />
           </div>
         </label>
@@ -407,7 +403,7 @@ export default function LeadsPage() {
                       </a>
                     </td>
                     <td><span className="table-source"><i className={`source-dot source-${lead.source.toLowerCase()}`} />{lead.source}</span></td>
-                    <td className="table-value">{CURRENCY.format(lead.value)}</td>
+                    <td className="table-value">{formatCurrency(lead.value)}</td>
                     <td><span className={stageClass(lead.stage)}>{lead.stage}</span></td>
                     <td>
                       <span className="table-owner">
@@ -429,7 +425,7 @@ export default function LeadsPage() {
                   <span className="lead-mobile-copy">
                     <strong>{lead.name}</strong>
                     <span>{lead.company}</span>
-                    <span className="lead-mobile-meta">{lead.email} · {CURRENCY.format(lead.value)}</span>
+                    <span className="lead-mobile-meta">{lead.email} · {formatCurrency(lead.value)}</span>
                   </span>
                   <span className={stageClass(lead.stage)}>{lead.stage}</span>
                   <Icon name="arrowUpRight" size={15} />
