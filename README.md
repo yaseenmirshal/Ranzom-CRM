@@ -44,3 +44,13 @@ docker compose restart odoo
 Odoo's ORM stores business data in PostgreSQL. This module extends Odoo's native `crm.lead` and `res.partner` models and adds a small `ranzom.followup` model. Standard Odoo Sales, Projects and Accounting remain the system of record for quotations, projects, invoices and payments.
 
 That keeps v1 close to Odoo's native workflows and makes the later n8n/API integrations easier.
+
+The Next.js frontend is in `frontend/`. Its routes and source code are organized in `frontend/src/`, with route pages under `frontend/src/app/`.
+
+To run the frontend locally:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
